@@ -1,0 +1,9 @@
+CHANGELOG
+LICENSE
+README
+Rakefile
+lib/palmade/candy_wrapper.rb
+lib/palmade/candy_wrapper/pingers.rb
+lib/palmade/candy_wrapper/posporo.rb
+lib/palmade/candy_wrapper/twitow.rb
+Manifest
