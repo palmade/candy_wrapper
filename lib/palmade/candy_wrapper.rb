@@ -11,5 +11,6 @@ module Palmade
 
     autoload :Twitow, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/twitow')
     autoload :Posporo, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/posporo')
+    autoload :Pingers, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/pingers')
   end
 end
