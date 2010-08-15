@@ -219,6 +219,16 @@ module Palmade::CandyWrapper
       end
     end
 
+    def self.oauth_echo_provider
+      api_url("account/verify_credentials.json")
+    end
+
+    def self.oauth_echo(username, oauth_token, oauth_secret)
+      http_opts = create_http_opts(username, oauth_secret, oauth_token)
+
+      HTTP.make_oauth_authorization(:get, api_url("account/verify_credentials.json"), http_opts)
+    end
+
     def self.tverify(username, password = nil, oauth_token = nil)
       raise "Please provide either password or oauth access tokens" if password.nil? && oauth_token.nil?
       http_opts = create_http_opts(username, password, oauth_token)

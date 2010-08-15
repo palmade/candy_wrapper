@@ -34,17 +34,38 @@ module Palmade::CandyWrapper
     end
 
     def self.secure?
-      @@secure ||= false
+      @@secure ||= true
     end
 
     def self.http_proto
       secure? ? "https" : "http"
     end
 
-    def self.upload_and_post(username, password, title, body = nil, attachments = nil, options = { })
-      raise "Please provide either password or oauth access token" if password.nil?
+    def self.upload(username, oauth_token, oauth_secret, title, body = nil, attachments = nil, options = { })
+      raise "Please provide an oauth_token and an oauth_secret" if oauth_token.nil? || oauth_secret.nil?
 
-      http_opts = prepare_http_opts(username, password, options)
+      http_opts = prepare_http_opts(username, oauth_secret, oauth_token, options)
+      post_data = prepare_post_data(nil, nil, title, body, attachments, options)
+
+      # disables the annoying Expect header, which don't work wth Ping.fm's server
+      http_opts[:headers]["Expect"] = nil
+
+      update_url = "#{http_proto}://posterous.com/api2/upload.json"
+
+      logger.debug "#{update_url} => #{post_data.inspect}"
+      resp = HTTP.post(update_url, post_data, nil, http_opts)
+      unless resp.nil? || resp.fail?
+        parse_json_response(resp)
+      else
+        resp
+      end
+    end
+
+    # Twitter compatible API
+    def self.upload_and_post(username, password, title, body = nil, attachments = nil, options = { })
+      raise "Please provide a password" if password.nil?
+
+      http_opts = prepare_http_opts(username, password, nil, options)
       post_data = prepare_post_data(username, password, title, body, attachments, options)
 
       # disables the annoying Expect header, which don't work wth Ping.fm's server
@@ -63,8 +84,31 @@ module Palmade::CandyWrapper
 
     protected
 
+    def self.parse_json_response(resp)
+# {
+#      "id":"T8v",
+#      "type":"png",
+#      "timestamp":"Wed Jun 02 13:19:29 -0700 2010",
+#      "text":"message",
+#      "url":"http://post.ly/T8v",
+#      "height":211,
+#      "width":165,
+#      "size":66,
+#      "user":{
+#           "screen_name":"l_pauling",
+#           "id":21465735
+#      }
+# }
+      json_resp = resp.json_read
+      unless json_resp.include?('error')
+        json_resp
+      else
+        raise PosporoFail.new("Error reply: #{json_resp['error']}", resp)
+      end
+    end
+
     def self.parse_response(resp)
-      xml_d = resp.xml_parse
+      xml_d = resp.xml_read
       unless xml_d.nil?
         xml_resp = xml_d.find("/rsp").first
         unless xml_resp.nil?
@@ -97,10 +141,24 @@ module Palmade::CandyWrapper
       end
     end
 
-    def self.prepare_http_opts(username, password, options = { })
+    def self.prepare_http_opts(username, password, oauth_token = nil, options = { })
       http_opts = { :headers => { } }
       add_user_agent(http_opts)
+
+      # add oauth echo authorization, if provided
+      unless oauth_token.nil?
+        add_authorization(http_opts, username, oauth_token, password)
+        options[:use_oauth_echo] = true
+      end
+
       http_opts
+    end
+
+    def self.add_authorization(http_opts, username, oauth_token, oauth_secret)
+      http_opts[:headers]['X-Auth-Service-Provider'] = Twitow.oauth_echo_provider
+
+      echo_authorization = Twitow.oauth_echo(username, oauth_token, oauth_secret)
+      http_opts[:headers]['X-Verify-Credentials-Authorization'] = echo_authorization
     end
 
     def self.add_user_agent(http_opts)
@@ -120,12 +178,18 @@ module Palmade::CandyWrapper
         options[:source_link] = "http://github.com/markjeee/candy_wrapper"
       end
 
-      { :username => username,
-        :password => password,
+      post_data = { }
+      unless options.include?(:use_oauth_echo) || username.nil? || password.nil?
+        post_data[:username] = username
+        post_data[:password] = password
+      end
+
+      post_data.merge({
         :message => title,
         :body => body,
         :source => options[:source],
-        :sourceLink => options[:source_link] }
+        :sourceLink => options[:source_link]
+      })
     end
   end
 end
