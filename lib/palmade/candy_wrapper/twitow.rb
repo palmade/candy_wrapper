@@ -202,6 +202,10 @@ module Palmade::CandyWrapper
       oc.get_access_token(request_token, access_options)
     end
 
+    def self.is_tsend_reply?(resp)
+      resp.is_a?(Hash) && resp.include?('id') && resp.include?('text')
+    end
+
     def self.tsend(username, status, password = nil, oauth_token = nil)
       raise "Please provide either password or oauth access tokens" if password.nil? && oauth_token.nil?
       http_opts = create_http_opts(username, password, oauth_token)
