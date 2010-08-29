@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# encoding: utf-8
+
 require 'logger'
 
 module Palmade::CandyWrapper
@@ -214,7 +217,9 @@ module Palmade::CandyWrapper
       logger.debug { "#{update_url} => #{http_opts.inspect}" }
 
       status = "#{status[0,137]}..." if status.size > 140
-      post_data = { :status => status }
+
+      post_data = { 'status' => status }
+
       resp = HTTP.post(update_url, post_data, nil, http_opts)
       unless resp.nil? || resp.fail?
         resp.json_read
@@ -337,7 +342,11 @@ module Palmade::CandyWrapper
     end
 
     def self.create_http_opts(username, password, oauth_token = nil)
-      http_opts = { :headers => { } }
+      http_opts = {
+        :headers => { },
+        :charset_encoding => 'utf-8'
+      }
+
       add_authentication(http_opts, username, password, oauth_token)
       add_user_agent(http_opts)
       http_opts
