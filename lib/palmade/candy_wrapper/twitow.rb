@@ -267,7 +267,7 @@ module Palmade::CandyWrapper
 
       resp = HTTP.get(mentions_url, nil, http_opts)
       unless resp.nil? || resp.fail?
-        resp.json_read.collect { |m| Status.new(m) }
+        resp.json_read.compact.collect { |m| Status.new(m) }
       else
         resp
       end
