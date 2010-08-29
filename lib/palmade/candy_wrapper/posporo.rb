@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# encoding: utf-8
+
 module Palmade::CandyWrapper
   module Posporo
     HTTP = Palmade::HttpService::Http
@@ -142,7 +145,11 @@ module Palmade::CandyWrapper
     end
 
     def self.prepare_http_opts(username, password, oauth_token = nil, options = { })
-      http_opts = { :headers => { } }
+      http_opts = {
+        :headers => { },
+        :charset_encoding => 'utf-8'
+      }
+
       add_user_agent(http_opts)
 
       # add oauth echo authorization, if provided
@@ -169,7 +176,6 @@ module Palmade::CandyWrapper
 
     # TODO: attachments are not yet supported
     def self.prepare_post_data(username, password, title, body, attachments, options = { })
-
       unless options.include?(:source)
         options[:source] = "candy_wrapper"
       end
@@ -179,16 +185,17 @@ module Palmade::CandyWrapper
       end
 
       post_data = { }
+
       unless options.include?(:use_oauth_echo) || username.nil? || password.nil?
-        post_data[:username] = username
-        post_data[:password] = password
+        post_data['username'] = username
+        post_data['password'] = password
       end
 
       post_data.merge({
-        :message => title,
-        :body => body,
-        :source => options[:source],
-        :sourceLink => options[:source_link]
+        'message' => title,
+        'body' => body,
+        'source' => options[:source],
+        'sourceLink' => options[:source_link]
       })
     end
   end
