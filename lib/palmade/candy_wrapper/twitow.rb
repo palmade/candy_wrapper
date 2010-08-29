@@ -213,6 +213,9 @@ module Palmade::CandyWrapper
       raise "Please provide either password or oauth access tokens" if password.nil? && oauth_token.nil?
       http_opts = create_http_opts(username, password, oauth_token)
 
+      # disables the annoying Expect header
+      http_opts[:headers]["Expect"] = nil
+
       update_url = api_url("statuses/update.json")
       logger.debug { "#{update_url} => #{http_opts.inspect}" }
 
