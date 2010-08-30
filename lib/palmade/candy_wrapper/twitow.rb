@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-# encoding: utf-8
-
-require 'logger'
+# -*- encoding: utf-8 -*-
 
 module Palmade::CandyWrapper
   module Twitow
@@ -11,17 +8,10 @@ module Palmade::CandyWrapper
     TWITTER_API_SITE = "api.twitter.com".freeze
     TWITTER_API_VERSION = "1".freeze
 
-    HTTP = Palmade::HttpService::Http
-    HTTP_RESPONSE = Palmade::HttpService::Http::Response
+    HTTP = Palmade::CandyWrapper.http
+    HTTP_RESPONSE = Palmade::CandyWrapper.http::Response
 
-    class TweetFail < StandardError
-      attr_reader :response
-
-      def initialize(msg = nil, response = nil)
-        super(msg)
-        @response = response
-      end
-    end
+    class TweetFail < HttpFail; end
 
     class UnknownFail < TweetFail
       def initialize(msg = nil, response = nil)
@@ -43,6 +33,8 @@ module Palmade::CandyWrapper
         super(msg, response)
       end
     end
+
+    extend Mixins::CommonFacilities
 
     class Status
       attr_accessor :date
@@ -96,27 +88,6 @@ module Palmade::CandyWrapper
       end
     end
 
-    def self.user_agent=(ua); @@ua = ua; end
-    def self.user_agent
-      if defined?(@@ua)
-        @@ua
-      else
-        nil
-      end
-    end
-
-    def self.logger=(l); @@logger = l; end
-    def self.logger
-      if defined?(@@logger)
-        @@logger
-      else
-        @@logger = Palmade::CandyWrapper.logger
-      end
-    end
-
-    def self.secure=(s); @@secure = s; end
-    def self.secure?; @@secure ||= true; end
-
     def self.tweet_fail!(resp, msg = nil)
       if resp.respond_to?(:http_response?) && resp.http_response?
         e = tweet_fail(resp, msg)
@@ -155,10 +126,6 @@ module Palmade::CandyWrapper
       else
         nil
       end
-    end
-
-    def self.http_proto
-      secure? ? "https".freeze : "http".freeze
     end
 
     def self.oauth_consumer(consumer_key = nil, consumer_secret = nil, nw = false)
@@ -205,6 +172,16 @@ module Palmade::CandyWrapper
       oc.get_access_token(request_token, access_options)
     end
 
+    def self.oauth_echo_provider
+      api_url("account/verify_credentials.json")
+    end
+
+    def self.oauth_echo(username, oauth_token, oauth_secret)
+      http_opts = create_http_opts(username, oauth_secret, oauth_token)
+
+      HTTP.make_oauth_authorization(:get, api_url("account/verify_credentials.json"), http_opts)
+    end
+
     def self.is_tsend_reply?(resp)
       resp.is_a?(Hash) && resp.include?('id') && resp.include?('text')
     end
@@ -229,16 +206,6 @@ module Palmade::CandyWrapper
       else
         resp
       end
-    end
-
-    def self.oauth_echo_provider
-      api_url("account/verify_credentials.json")
-    end
-
-    def self.oauth_echo(username, oauth_token, oauth_secret)
-      http_opts = create_http_opts(username, oauth_secret, oauth_token)
-
-      HTTP.make_oauth_authorization(:get, api_url("account/verify_credentials.json"), http_opts)
     end
 
     def self.is_tverify_reply?(resp)
@@ -368,18 +335,6 @@ module Palmade::CandyWrapper
       unless user_agent.nil?
         http_opts[:headers]["User-Agent"] = user_agent
       end
-    end
-
-    def self.query_string(q)
-      HTTP.query_string(q)
-    end
-
-    def self.urlencode(s)
-      HTTP.urlencode(s)
-    end
-
-    def self.urldecode(s)
-      HTTP.urldecode(s)
     end
   end
 end

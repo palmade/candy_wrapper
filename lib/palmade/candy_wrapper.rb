@@ -8,9 +8,14 @@ module Palmade
   module CandyWrapper
     def self.logger=(l); @logger = l; end
     def self.logger; @logger ||= Logger.new(STDOUT); end
+    def self.http; Palmade::HttpService::Http; end
 
     autoload :Twitow, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/twitow')
     autoload :Posporo, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/posporo')
     autoload :Pingers, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/pingers')
+    autoload :BitLee, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/bitlee')
+
+    autoload :Mixins, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/mixins')
+    autoload :HttpFail, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/http_fail')
   end
 end

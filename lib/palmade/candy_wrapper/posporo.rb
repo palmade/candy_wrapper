@@ -3,46 +3,11 @@
 
 module Palmade::CandyWrapper
   module Posporo
-    HTTP = Palmade::HttpService::Http
+    HTTP = CandyWrapper.http
 
-    class PosporoFail < StandardError
-      attr_reader :response
+    class PosporoFail < HttpFail; end
 
-      def initialize(msg = nil, response = nil)
-        super(msg)
-        @response = response
-      end
-    end
-
-    def self.user_agent=(ua); @@ua = ua; end
-    def self.user_agent
-      if defined?(@@ua)
-        @@ua
-      else
-        nil
-      end
-    end
-
-    def self.logger=(l); @@logger = l; end
-    def self.logger
-      if defined?(@@logger)
-        @@logger
-      else
-        @@logger = Palmade::CandyWrapper.logger
-      end
-    end
-
-    def self.secure=(s)
-      @@secure = s
-    end
-
-    def self.secure?
-      @@secure ||= true
-    end
-
-    def self.http_proto
-      secure? ? "https" : "http"
-    end
+    extend Mixins::CommonFacilities
 
     def self.upload(username, oauth_token, oauth_secret, title, body = nil, attachments = nil, options = { })
       raise "Please provide an oauth_token and an oauth_secret" if oauth_token.nil? || oauth_secret.nil?
