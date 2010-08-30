@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 module Palmade::CandyWrapper
   class HttpFail < StandardError
     attr_reader :response

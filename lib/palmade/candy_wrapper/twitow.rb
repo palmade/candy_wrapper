@@ -201,10 +201,10 @@ module Palmade::CandyWrapper
       post_data = { 'status' => status }
 
       resp = HTTP.post(update_url, post_data, nil, http_opts)
-      unless resp.nil? || resp.fail?
+      unless resp.fail?
         resp.json_read
       else
-        resp
+        tweet_fail! resp, "tsend failed"
       end
     end
 
@@ -220,10 +220,10 @@ module Palmade::CandyWrapper
       logger.debug { "#{verify_url} => #{http_opts.inspect}" }
 
       resp = HTTP.get(verify_url, nil, http_opts)
-      unless resp.nil? || resp.fail?
+      unless resp.fail?
         resp.json_read
       else
-        resp
+        tweet_fail! resp, "tverify failed"
       end
     end
 
@@ -241,10 +241,10 @@ module Palmade::CandyWrapper
       logger.debug { "#{mentions_url} => #{http_opts.inspect}" }
 
       resp = HTTP.get(mentions_url, nil, http_opts)
-      unless resp.nil? || resp.fail?
+      unless resp.fail?
         resp.json_read.compact.collect { |m| Status.new(m) }
       else
-        resp
+        tweet_fail! resp, "tmentions failed"
       end
     end
 
@@ -262,10 +262,10 @@ module Palmade::CandyWrapper
       logger.debug { "#{friends_url} => #{http_opts.inspect}" }
 
       resp = HTTP.get(friends_url, nil, http_opts)
-      unless resp.nil? || resp.fail?
+      unless resp.fail?
         resp.json_read.compact.collect { |m| Status.new(m) }
       else
-        resp
+        tweet_fail! resp, "tfriends failed"
       end
     end
 
@@ -283,10 +283,10 @@ module Palmade::CandyWrapper
       logger.debug { "#{user_url} => #{http_opts.inspect}" }
 
       resp = HTTP.get(user_url, nil, http_opts)
-      unless resp.nil? || resp.fail?
-        resp.json_read.collect { |m| Status.new(m) }
+      unless resp.fail?
+        resp.json_read.compact.collect { |m| Status.new(m) }
       else
-        resp
+        tweet_fail! resp, "tuser failed"
       end
     end
 
@@ -304,10 +304,10 @@ module Palmade::CandyWrapper
       logger.debug { "#{dms_url} => #{http_opts.inspect}" }
 
       resp = HTTP.get(dms_url, nil, http_opts)
-      unless resp.nil? || resp.fail?
-        resp.json_read.collect { |dm| DM.new(dm) }
+      unless resp.fail?
+        resp.json_read.compact.collect { |dm| DM.new(dm) }
       else
-        resp
+        tweet_fail! resp, "tdms failed"
       end
     end
 

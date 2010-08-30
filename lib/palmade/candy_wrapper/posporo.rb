@@ -3,7 +3,7 @@
 
 module Palmade::CandyWrapper
   module Posporo
-    HTTP = CandyWrapper.http
+    HTTP = Palmade::CandyWrapper.http
 
     class PosporoFail < HttpFail; end
 
@@ -43,10 +43,10 @@ module Palmade::CandyWrapper
 
       logger.debug "#{update_url} => #{post_data.inspect}"
       resp = HTTP.post(update_url, post_data, nil, http_opts)
-      unless resp.nil? || resp.fail?
+      unless resp.fail?
         parse_response(resp)
       else
-        resp
+        resp.raise_http_error
       end
     end
 

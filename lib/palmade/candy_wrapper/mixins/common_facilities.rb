@@ -5,30 +5,27 @@ module Palmade::CandyWrapper
     module CommonFacilities
       HTTP = Palmade::CandyWrapper.http
 
-      def user_agent=(ua); @ua = ua; end
-      def user_agent
-        if defined?(@ua)
-          @ua
-        else
-          nil
-        end
-      end
+      def self.extended(base)
+        ce = <<CE
+          @@ua = nil
+          def self.user_agent=(ua); @@ua = ua; end
+          def self.user_agent; @@ua; end
 
-      def logger=(l); @logger = l; end
-      def logger
-        if defined?(@logger)
-          @logger
-        else
-          @logger = Palmade::CandyWrapper.logger
-        end
-      end
+          @@logger = nil
+          def self.logger=(l); @@logger = l; end
+          def self.logger
+            if @@logger.nil?
+              @@logger = Palmade::CandyWrapper.logger
+            else
+              @@logger
+            end
+          end
 
-      def secure=(s)
-        @secure = s
-      end
-
-      def secure?
-        @secure ||= true
+          @@secure = true
+          def self.secure=(s); @@secure = s; end
+          def self.secure?; @@secure; end
+CE
+        base.class_eval(ce, __FILE__, __LINE__ + 1)
       end
 
       def http_proto
