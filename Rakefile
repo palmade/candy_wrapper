@@ -3,7 +3,7 @@ gem 'echoe'
 require 'echoe'
 
 Echoe.new("candy_wrapper") do |p|
-  p.author="markjeee"
+  p.author = "palmade"
   p.project = "palmade"
   p.summary = "Popular web API wrappers"
 

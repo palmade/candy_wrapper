@@ -1,9 +1,13 @@
 CHANGELOG
 LICENSE
+Manifest
 README
 Rakefile
 lib/palmade/candy_wrapper.rb
+lib/palmade/candy_wrapper/bitlee.rb
+lib/palmade/candy_wrapper/http_fail.rb
+lib/palmade/candy_wrapper/mixins.rb
+lib/palmade/candy_wrapper/mixins/common_facilities.rb
 lib/palmade/candy_wrapper/pingers.rb
 lib/palmade/candy_wrapper/posporo.rb
 lib/palmade/candy_wrapper/twitow.rb
-Manifest
