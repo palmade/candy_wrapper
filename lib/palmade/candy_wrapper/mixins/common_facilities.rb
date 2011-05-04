@@ -43,6 +43,13 @@ CE
       def urldecode(s)
         HTTP.urldecode(s)
       end
+
+      def stringify_keys(h)
+        h.inject({ }) do |o, (k,v)|
+          o[k.to_s] = v
+          o
+        end
+      end
     end
   end
 end

@@ -1,5 +1,5 @@
-CANDY_WRAPPER_LIB_DIR = File.expand_path(File.dirname(__FILE__)) unless defined?(CANDY_WRAPPER_LIB_DIR)
-CANDY_WRAPPER_ROOT_DIR = File.expand_path(File.join(CANDY_WRAPPER_LIB_DIR, '../..')) unless defined?(CANDY_WRAPPER_ROOT_DIR)
+CANDY_WRAPPER_LIB_DIR = File.expand_path('..', __FILE__)
+CANDY_WRAPPER_ROOT_DIR = File.expand_path('../../..', __FILE__)
 
 require 'rubygems'
 require 'logger'
@@ -14,6 +14,7 @@ module Palmade
     autoload :Posporo, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/posporo')
     autoload :Pingers, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/pingers')
     autoload :Bitlee, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/bitlee')
+    autoload :MiksPanel, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/miks_panel')
 
     autoload :Mixins, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/mixins')
     autoload :HttpFail, File.join(CANDY_WRAPPER_LIB_DIR, 'candy_wrapper/http_fail')
